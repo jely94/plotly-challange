@@ -8,12 +8,14 @@ d3.json("data/samples.json").then(function(data) {
     subjectDrop(jsonData.names)
   });
 
+  // Create function to apply subject selection change
   function optionChanged(subject){
         console.log(subject)
         demoPop(subject)
         createGraph(subject)
   }
 
+  // Create funtion to populate the dropdown menu
   function subjectDrop(names){
         var selector = d3.select("#selDataset")
         for (var i = 0; i < names.length; i++) {
@@ -23,6 +25,8 @@ d3.json("data/samples.json").then(function(data) {
 
   }
 
+
+  // Create function to populate the demographic information of the selected subject
   function demoPop(subject){
         console.log(subject)
         var metaData = jsonData.metadata.filter(testInfo => testInfo.id == subject)[0];
@@ -34,6 +38,7 @@ d3.json("data/samples.json").then(function(data) {
 
   }
 
+  // Create function to generate the graphs
    function createGraph(subject){
          console.log(subject)
          sampleData = jsonData.samples.filter(testData => testData.id == subject)[0];
@@ -46,11 +51,11 @@ d3.json("data/samples.json").then(function(data) {
          console.log(idValues)
          var idOTDValues = idValues.map(d => "OTU " + d)
          console.log(`OTU IDS: ${idOTDValues}`)
-         var otuLabels = sampleData.otu_labels.slice(0, 10);
+         var otuLabels = sampleData.otu_labels.slice(0, 10).reverse();
          console.log(`Sample Values: ${sampleValues}`)
          console.log(`ID Values: ${idValues}`)
 
-
+        //  Create a trace for the horizontal bar graph
          var trace1 = {
              x: sampleValues,
              y: idOTDValues,
@@ -59,7 +64,7 @@ d3.json("data/samples.json").then(function(data) {
              orientation: "h",
          };
 
-         var data = [trace1];
+         var data1 = [trace1];
 
          var layout = {
              title: "Top Ten OTUs",
@@ -74,7 +79,31 @@ d3.json("data/samples.json").then(function(data) {
              }
          };
 
-         Plotly.newPlot("bar", data, layout);
+         Plotly.newPlot("bar", data1, layout);
+
+         // Create the trace for the bubble graph
+         var trace2 = {
+             x: sampleData.otu_ids,
+             y: sampleData.sample_values,
+             mode: "markers",
+             marker: {
+                 size: sampleData.sample_values,
+                 color: sampleData.otu_ids
+             },
+             text: sampleData.otu_labels
+         };
+
+         var layout = {
+             xaxis: {title: "OTU ID"},
+             height: 600,
+             width: 1300
+         };
+
+         var data2 = [trace2];
+
+         Plotly.newPlot("bubble", data2, layout);
+
+         
      }
 
    
